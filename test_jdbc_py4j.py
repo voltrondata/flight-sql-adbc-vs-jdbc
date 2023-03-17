@@ -44,4 +44,4 @@ with Timer(name=f"\nJDBC - Py4J - Fetch data from lineitem table", text=TIMER_TE
     stmt.close()
     con.close()
 
-    print(f"Fetch a total of: {row_count} row(s)")
+    print(f"Number of rows fetched: {row_count}")
