@@ -33,7 +33,12 @@ echo "FLIGHT_PASSWORD=flight_password" > ./.env
 python test_adbc.py
 ```
 
-### Run JDBC example
+### Run JDBC - Py4J example
 ```shell
-python test_jdbc.py
+python test_jdbc_py4j.py
+```
+
+### Run JDBC - PyArrow example
+```shell
+python test_jdbc_pyarrow.py
 ```

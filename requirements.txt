@@ -3,3 +3,4 @@ py4j==0.10.9.7
 python-dotenv==1.0.0
 pyarrow==11.0.0
 codetiming==1.4.0
+pandas==1.5.3
