@@ -6,15 +6,16 @@ from pathlib import Path
 import jpype.imports
 import pyarrow.jvm
 from dotenv import load_dotenv
+
 from utils import Timer, TIMER_TEXT, BENCHMARK_SQL_STATEMENT
+
+SCRIPT_DIR = Path(__file__).parent.resolve()
 
 with Timer(name=f"\nJDBC - PyArrow - Fetch data from lineitem table", text=TIMER_TEXT):
     # Load our environment for the password...
     load_dotenv(dotenv_path=".env")
 
     flight_password = os.environ["FLIGHT_PASSWORD"]
-
-    SCRIPT_DIR = Path(__file__).parent.resolve()
 
     classpath = SCRIPT_DIR / "drivers" / "arrow-flight-sql-combined-jdbc-0.1-SNAPSHOT-jar-with-dependencies.jar"
     os.environ["_JAVA_OPTIONS"] = '--add-opens=java.base/java.nio=ALL-UNNAMED'
