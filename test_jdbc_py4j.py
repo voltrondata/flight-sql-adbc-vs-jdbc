@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from py4j.java_gateway import JavaGateway
-from utils import Timer, TIMER_TEXT
+from utils import Timer, TIMER_TEXT, BENCHMARK_SQL_STATEMENT
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
 
@@ -29,8 +29,7 @@ with Timer(name=f"\nJDBC - Py4J - Fetch data from lineitem table", text=TIMER_TE
                 )
     con = gateway.jvm.java.sql.DriverManager.getConnection(jdbc_uri)
 
-    sql = "SELECT * FROM lineitem"
-    stmt = con.prepareStatement(sql)
+    stmt = con.prepareStatement(BENCHMARK_SQL_STATEMENT)
     rs = stmt.executeQuery()
     stmt.setFetchSize(10000)
 

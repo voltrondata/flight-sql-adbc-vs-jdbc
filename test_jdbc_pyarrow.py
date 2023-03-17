@@ -6,7 +6,7 @@ from pathlib import Path
 import jpype.imports
 import pyarrow.jvm
 from dotenv import load_dotenv
-from utils import Timer, TIMER_TEXT
+from utils import Timer, TIMER_TEXT, BENCHMARK_SQL_STATEMENT
 
 with Timer(name=f"\nJDBC - PyArrow - Fetch data from lineitem table", text=TIMER_TEXT):
     # Load our environment for the password...
@@ -45,27 +45,8 @@ with Timer(name=f"\nJDBC - PyArrow - Fetch data from lineitem table", text=TIMER
 
     conn = DriverManager.getConnection(jdbc_uri)
 
-    # We cast DECIMALs to FLOATs to avoid a PyArrow error
-    query = """SELECT l_orderkey
-     , l_partkey
-     , l_suppkey
-     , l_linenumber
-     , l_quantity
-     , CAST (l_extendedprice AS float) AS l_extendedprice
-     , CAST (l_discount AS float) AS l_discount
-     , CAST (l_tax AS float) AS l_tax
-     , l_returnflag
-     , l_linestatus
-     , l_shipdate
-     , l_commitdate
-     , l_receiptdate
-     , l_shipinstruct
-     , l_shipmode
-     , l_comment
-     FROM lineitem"""
-
     stmt = conn.createStatement()
-    result_set = stmt.executeQuery(query)
+    result_set = stmt.executeQuery(BENCHMARK_SQL_STATEMENT)
 
     root = VectorSchemaRoot.create(
         JdbcToArrowUtils.jdbcToArrowSchema(
