@@ -1,4 +1,5 @@
 from codetiming import Timer
+from pathlib import Path
 
 # Constants
 TIMER_TEXT = "{name}: Elapsed time: {:.4f} seconds"
@@ -19,3 +20,7 @@ BENCHMARK_SQL_STATEMENT = """SELECT l_orderkey
      , l_shipmode
      , l_comment
      FROM lineitem"""
+
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DATA_DIR = Path("data").resolve()
+DUCKDB_DB_FILE = DATA_DIR / "tpch_sf1.duckdb"

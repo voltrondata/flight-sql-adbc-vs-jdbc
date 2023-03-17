@@ -4,3 +4,4 @@ python-dotenv==1.0.0
 pyarrow==11.0.0
 codetiming==1.4.0
 pandas==1.5.3
+duckdb==0.7.1
