@@ -14,6 +14,8 @@ Create a new Python 3.8+ virtual environment:
 python3 -m venv ./venv
 # Activate the virtual environment
 . ./venv/bin/activate
+-- Update pip
+pip install --upgrade pip
 # Install requirements
 pip install -r ./requirements.txt
 ```
