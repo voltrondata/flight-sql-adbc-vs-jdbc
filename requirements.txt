@@ -1,4 +1,4 @@
-adbc_driver_flightsql==0.2.0
+adbc_driver_flightsql==0.3.0
 py4j==0.10.9.7
 python-dotenv==1.0.0
 pyarrow==11.0.0
