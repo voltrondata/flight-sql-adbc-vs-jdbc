@@ -21,6 +21,8 @@ BENCHMARK_SQL_STATEMENT = """SELECT l_orderkey
      , l_comment
      FROM lineitem"""
 
+NUMBER_OF_RUNS = 10
+
 SCRIPT_DIR = Path(__file__).parent.resolve()
 DATA_DIR = Path("data").resolve()
 DUCKDB_DB_FILE = DATA_DIR / "tpch_sf1.duckdb"

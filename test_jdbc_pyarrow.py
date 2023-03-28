@@ -7,60 +7,80 @@ import jpype.imports
 import pyarrow.jvm
 from dotenv import load_dotenv
 
-from utils import Timer, TIMER_TEXT, BENCHMARK_SQL_STATEMENT
+from utils import Timer, TIMER_TEXT, BENCHMARK_SQL_STATEMENT, NUMBER_OF_RUNS
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
 
-with Timer(name=f"\nJDBC - PyArrow - Fetch data from lineitem table", text=TIMER_TEXT):
-    # Load our environment for the password...
-    load_dotenv(dotenv_path=".env")
 
-    flight_password = os.environ["FLIGHT_PASSWORD"]
+def main():
+    with Timer(name=f"\nJDBC - PyArrow - Fetch data from lineitem table", text=TIMER_TEXT):
+        # Load our environment for the password...
+        load_dotenv(dotenv_path=".env")
 
-    classpath = SCRIPT_DIR / "drivers" / "arrow-flight-sql-combined-jdbc-0.1-SNAPSHOT-jar-with-dependencies.jar"
-    os.environ["_JAVA_OPTIONS"] = '--add-opens=java.base/java.nio=ALL-UNNAMED'
+        flight_password = os.environ["FLIGHT_PASSWORD"]
 
-    # Start the JVM
-    jpype.startJVM(jpype.getDefaultJVMPath(), f"-Djava.class.path={classpath}")
+        classpath = SCRIPT_DIR / "drivers" / "arrow-flight-sql-combined-jdbc-0.1-SNAPSHOT-jar-with-dependencies.jar"
+        os.environ["_JAVA_OPTIONS"] = '--add-opens=java.base/java.nio=ALL-UNNAMED'
 
-    from java.sql import DriverManager
+        # Start the JVM
+        try:
+            jpype.startJVM(jpype.getDefaultJVMPath(), f"-Djava.class.path={classpath}")
+        except OSError:
+            pass
 
-    from org.apache.arrow.adapter.jdbc import JdbcToArrowUtils, JdbcToArrowConfigBuilder
-    from org.apache.arrow.memory import RootAllocator
-    from org.apache.arrow.vector import VectorSchemaRoot
+        from java.sql import DriverManager
 
-    ra = RootAllocator(sys.maxsize)
-    calendar = JdbcToArrowUtils.getUtcCalendar()
-    config_builder = JdbcToArrowConfigBuilder()
-    config_builder.setAllocator(ra)
-    config_builder.setCalendar(calendar)
-    config_builder.setTargetBatchSize(-1)
-    pyarrow_jdbc_config = config_builder.build()
+        from org.apache.arrow.adapter.jdbc import JdbcToArrowUtils, JdbcToArrowConfigBuilder
+        from org.apache.arrow.memory import RootAllocator
+        from org.apache.arrow.vector import VectorSchemaRoot
 
-    # Get a connection to the Flight SQL database
-    jdbc_uri = ("jdbc:arrow-flight-sql://localhost:31337?"
-                "useEncryption=true"
-                f"&user=flight_username&password={flight_password}"
-                "&disableCertificateVerification=true"
-                )
+        ra = RootAllocator(sys.maxsize)
+        calendar = JdbcToArrowUtils.getUtcCalendar()
+        config_builder = JdbcToArrowConfigBuilder()
+        config_builder.setAllocator(ra)
+        config_builder.setCalendar(calendar)
+        config_builder.setTargetBatchSize(-1)
+        pyarrow_jdbc_config = config_builder.build()
 
-    conn = DriverManager.getConnection(jdbc_uri)
+        # Get a connection to the Flight SQL database
+        jdbc_uri = ("jdbc:arrow-flight-sql://localhost:31337?"
+                    "useEncryption=true"
+                    f"&user=flight_username&password={flight_password}"
+                    "&disableCertificateVerification=true"
+                    )
 
-    stmt = conn.createStatement()
-    result_set = stmt.executeQuery(BENCHMARK_SQL_STATEMENT)
+        conn = DriverManager.getConnection(jdbc_uri)
 
-    root = VectorSchemaRoot.create(
-        JdbcToArrowUtils.jdbcToArrowSchema(
-            result_set.getMetaData(),
-            pyarrow_jdbc_config
-        ),
-        pyarrow_jdbc_config.getAllocator()
-    )
-    try:
-        JdbcToArrowUtils.jdbcToArrowVectors(result_set, root, pyarrow_jdbc_config)
-        pyarrow_table = pyarrow.jvm.record_batch(root)
-        print(f"Number of rows fetched: {pyarrow_table.num_rows}")
-    finally:
-        # Ensure that we clear the JVM memory.
-        root.clear()
-        stmt.close()
+        stmt = conn.createStatement()
+        result_set = stmt.executeQuery(BENCHMARK_SQL_STATEMENT)
+
+        root = VectorSchemaRoot.create(
+            JdbcToArrowUtils.jdbcToArrowSchema(
+                result_set.getMetaData(),
+                pyarrow_jdbc_config
+            ),
+            pyarrow_jdbc_config.getAllocator()
+        )
+        try:
+            JdbcToArrowUtils.jdbcToArrowVectors(result_set, root, pyarrow_jdbc_config)
+            pyarrow_table = pyarrow.jvm.record_batch(root)
+            print(f"Number of rows fetched: {pyarrow_table.num_rows}")
+        finally:
+            # Ensure that we clear the JVM memory.
+            root.clear()
+            stmt.close()
+
+
+if __name__ == "__main__":
+    import timeit
+
+    total_time = timeit.timeit(stmt="main()",
+                               setup="from __main__ import main",
+                               number=NUMBER_OF_RUNS
+                               )
+
+    print((f"Number of runs: {NUMBER_OF_RUNS}\n"
+           f"Total time: {total_time}\n"
+           f"Average time: {total_time / float(NUMBER_OF_RUNS)}"
+           )
+          )
