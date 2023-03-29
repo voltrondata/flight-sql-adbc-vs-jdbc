@@ -12,7 +12,7 @@ git clone https://github.com/voltrondata/flight-sql-adbc-vs-jdbc
 cd flight-sql-adbc-vs-jdbc
 ```
 
-Create a new Python 3.8+ virtual environment:
+Create a new [Python 3.9+](https://www.python.org/downloads/) virtual environment:
 ```shell
 # Create the virtual environment
 python3 -m venv ./venv
@@ -24,21 +24,15 @@ pip install --upgrade pip
 pip install -r ./requirements.txt
 ```
 
-### Run a Flight SQL Server with a TPC-H Scale Factor 1 (1GB) database
+### Create a local TPC-H Scale Factor 1 (1 GB) database (it will be created in your local [data directory](./data))
+```shell
+python create_local_duckdb_database.py
+```
+
+### Run a Flight SQL Server with a TPC-H Scale Factor 1 (1GB) database - with [Docker](https://www.docker.com/products/docker-desktop/)
 
 ```
-# Generate a TPC-H database in the host's /tmp directory
-pushd /tmp
-
-duckdb ./tpch_sf1.duckdb << EOF
-.bail on
-.echo on
-SELECT VERSION();
-INSTALL tpch;
-LOAD tpch;
-CALL dbgen(sf=1);
-EOF
-
+pushd data
 # Run the flight-sql docker container image - and mount the host's DuckDB database file created above inside the container
 docker run --name flight-sql \
            --detach \
@@ -81,8 +75,5 @@ python test_jdbc_pyarrow.py
 
 ### Run DuckDB local Database example
 ```shell
-# First create a local TPC-H Scale Factor 1 (1 GB) database 
-python create_local_duckdb_database.py
-# Now run the benchmark
 python test_duckdb.py
 ```
