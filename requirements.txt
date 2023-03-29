@@ -5,3 +5,4 @@ pyarrow==11.0.0
 codetiming==1.4.0
 pandas==1.5.3
 duckdb==0.7.1
+jpype1==1.4.1
