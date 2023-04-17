@@ -60,20 +60,20 @@ echo "FLIGHT_PASSWORD=flight_password" > ./.env
 
 ### Run ADBC example
 ```shell
-python test_adbc.py
+python benchmark_adbc.py
 ```
 
 ### Run JDBC - Py4J example
 ```shell
-python test_jdbc_py4j.py
+python benchmark_jdbc_py4j.py
 ```
 
 ### Run JDBC - PyArrow example
 ```shell
-python test_jdbc_pyarrow.py
+python benchmark_jdbc_super_jar.py
 ```
 
 ### Run DuckDB local Database example
 ```shell
-python test_duckdb.py
+python benchmark_duckdb.py
 ```

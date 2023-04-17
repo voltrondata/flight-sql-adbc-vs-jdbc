@@ -1,13 +1,14 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 from py4j.java_gateway import JavaGateway
-from utils import Timer, TIMER_TEXT, BENCHMARK_SQL_STATEMENT, NUMBER_OF_RUNS
+from utils import Timer, TIMER_TEXT, NUMBER_OF_RUNS, FlightDatabaseConnection, FLIGHT_DB, BENCHMARK_SQL_STATEMENT
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
 
 
-def main():
+def benchmark_jdbc_py4j(db: FlightDatabaseConnection = FLIGHT_DB,
+                        query: str = BENCHMARK_SQL_STATEMENT
+                        ):
     with Timer(name=f"\nJDBC - Py4J - Fetch data from lineitem table", text=TIMER_TEXT):
         # Open JVM interface with the JDBC Jar
         jdbc_jar_path = SCRIPT_DIR / "drivers" / "flight-sql-jdbc-driver-11.0.0.jar"
@@ -18,20 +19,15 @@ def main():
         jdbc_class = "org.apache.arrow.driver.jdbc.ArrowFlightJdbcDriver"
         gateway.jvm.Class.forName(jdbc_class)
 
-        # Load our environment for the password...
-        load_dotenv(dotenv_path=".env")
-
-        flight_password = os.environ["FLIGHT_PASSWORD"]
-
         # Initiate connection
-        jdbc_uri = ("jdbc:arrow-flight-sql://localhost:31337?"
+        jdbc_uri = (f"jdbc:arrow-flight-sql://{db.hostname}:{str(db.port)}?"
                     "useEncryption=true"
-                    f"&user=flight_username&password={flight_password}"
-                    "&disableCertificateVerification=true"
+                    f"&user={db.username}&password={db.password}"
+                    f"&disableCertificateVerification={str(db.disableCertificateVerification).lower()}"
                     )
         con = gateway.jvm.java.sql.DriverManager.getConnection(jdbc_uri)
 
-        stmt = con.prepareStatement(BENCHMARK_SQL_STATEMENT)
+        stmt = con.prepareStatement(query)
         rs = stmt.executeQuery()
         stmt.setFetchSize(10000)
 
@@ -51,8 +47,8 @@ def main():
 if __name__ == "__main__":
     import timeit
 
-    total_time = timeit.timeit(stmt="main()",
-                               setup="from __main__ import main",
+    total_time = timeit.timeit(stmt="benchmark_jdbc_py4j()",
+                               setup="from __main__ import benchmark_jdbc_py4j",
                                number=NUMBER_OF_RUNS
                                )
 

@@ -5,20 +5,15 @@ from pathlib import Path
 
 import jpype.imports
 import pyarrow.jvm
-from dotenv import load_dotenv
-
-from utils import Timer, TIMER_TEXT, BENCHMARK_SQL_STATEMENT, NUMBER_OF_RUNS
+from utils import Timer, TIMER_TEXT, NUMBER_OF_RUNS, FlightDatabaseConnection, FLIGHT_DB, BENCHMARK_SQL_STATEMENT
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
 
 
-def main():
+def benchmark_jdbc_super_jar(db: FlightDatabaseConnection = FLIGHT_DB,
+                             query: str = BENCHMARK_SQL_STATEMENT
+                             ):
     with Timer(name=f"\nJDBC - PyArrow - Fetch data from lineitem table", text=TIMER_TEXT):
-        # Load our environment for the password...
-        load_dotenv(dotenv_path=".env")
-
-        flight_password = os.environ["FLIGHT_PASSWORD"]
-
         classpath = SCRIPT_DIR / "drivers" / "arrow-flight-sql-combined-jdbc-0.1-SNAPSHOT-jar-with-dependencies.jar"
         os.environ["_JAVA_OPTIONS"] = '--add-opens=java.base/java.nio=ALL-UNNAMED'
 
@@ -43,16 +38,16 @@ def main():
         pyarrow_jdbc_config = config_builder.build()
 
         # Get a connection to the Flight SQL database
-        jdbc_uri = ("jdbc:arrow-flight-sql://localhost:31337?"
+        jdbc_uri = (f"jdbc:arrow-flight-sql://{db.hostname}:{str(db.port)}?"
                     "useEncryption=true"
-                    f"&user=flight_username&password={flight_password}"
-                    "&disableCertificateVerification=true"
+                    f"&user={db.username}&password={db.password}"
+                    f"&disableCertificateVerification={str(db.disableCertificateVerification).lower()}"
                     )
 
         conn = DriverManager.getConnection(jdbc_uri)
 
         stmt = conn.createStatement()
-        result_set = stmt.executeQuery(BENCHMARK_SQL_STATEMENT)
+        result_set = stmt.executeQuery(query)
 
         root = VectorSchemaRoot.create(
             JdbcToArrowUtils.jdbcToArrowSchema(
@@ -69,13 +64,14 @@ def main():
             # Ensure that we clear the JVM memory.
             root.clear()
             stmt.close()
+            conn.close()
 
 
 if __name__ == "__main__":
     import timeit
 
-    total_time = timeit.timeit(stmt="main()",
-                               setup="from __main__ import main",
+    total_time = timeit.timeit(stmt="benchmark_jdbc_super_jar()",
+                               setup="from __main__ import benchmark_jdbc_super_jar",
                                number=NUMBER_OF_RUNS
                                )
 
