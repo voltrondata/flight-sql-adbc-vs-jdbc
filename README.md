@@ -56,7 +56,12 @@ For more details - see this [repo](https://github.com/voltrondata/flight-sql-ser
 echo "FLIGHT_PASSWORD=flight_password" > ./.env
 ```
 
-## Run benchmarks
+## Option 1 - Run all benchmarks (and generate graph in folder: [graph_output](graph_output))
+```shell
+python run_benchmarks.py
+```
+
+## Option 2 - Run individual benchmarks
 
 ### Run ADBC example
 ```shell
