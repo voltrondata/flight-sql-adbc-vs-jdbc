@@ -9,9 +9,12 @@ SCRIPT_DIR = Path(__file__).parent.resolve()
 def benchmark_jdbc_py4j(db: FlightDatabaseConnection = FLIGHT_DB,
                         query: str = BENCHMARK_SQL_STATEMENT
                         ):
-    with Timer(name=f"\nJDBC - Py4J - Fetch data from lineitem table", text=TIMER_TEXT):
+    with Timer(name=f"\nJDBC - Py4J - Fetch data from lineitem table",
+               text=TIMER_TEXT,
+               initial_text=True
+               ):
         # Open JVM interface with the JDBC Jar
-        jdbc_jar_path = SCRIPT_DIR / "drivers" / "flight-sql-jdbc-driver-11.0.0.jar"
+        jdbc_jar_path = SCRIPT_DIR / "drivers" / "flight-sql-jdbc-driver-12.0.0.jar"
         os.environ["_JAVA_OPTIONS"] = '--add-opens=java.base/java.nio=ALL-UNNAMED'
         gateway = JavaGateway.launch_gateway(classpath=jdbc_jar_path.as_posix())
 

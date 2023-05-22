@@ -4,7 +4,10 @@ from utils import Timer, TIMER_TEXT, DUCKDB_DB_FILE, NUMBER_OF_RUNS, BENCHMARK_S
 
 
 def benchmark_duckdb(query: str = BENCHMARK_SQL_STATEMENT):
-    with Timer(name=f"\nLocal DuckDB - Fetch data from lineitem table", text=TIMER_TEXT):
+    with Timer(name=f"\nLocal DuckDB - Fetch data from lineitem table",
+               text=TIMER_TEXT,
+               initial_text=True
+               ):
         with duckdb.connect(database=DUCKDB_DB_FILE.as_posix()) as conn:
             pyarrow_table = conn.execute(query=query).fetch_arrow_table()
             print(f"Number of rows fetched: {pyarrow_table.num_rows}")

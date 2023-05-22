@@ -12,7 +12,7 @@ BENCHMARK_SQL_STATEMENT = """SELECT l_orderkey
      , l_partkey
      , l_suppkey
      , l_linenumber
-     , l_quantity
+     , CAST (l_quantity AS float) AS l_quantity
      , CAST (l_extendedprice AS float) AS l_extendedprice
      , CAST (l_discount AS float) AS l_discount
      , CAST (l_tax AS float) AS l_tax

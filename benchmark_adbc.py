@@ -5,7 +5,10 @@ from utils import Timer, TIMER_TEXT, NUMBER_OF_RUNS, BENCHMARK_SQL_STATEMENT, Fl
 def benchmark_adbc(db: FlightDatabaseConnection = FLIGHT_DB,
                    query: str = BENCHMARK_SQL_STATEMENT
                    ):
-    with Timer(name=f"\nADBC - Fetch data from lineitem table", text=TIMER_TEXT):
+    with Timer(name=f"\nADBC - Fetch data from lineitem table",
+               text=TIMER_TEXT,
+               initial_text=True
+               ):
         with flight_sql.connect(uri=f"grpc+tls://{db.hostname}:{str(db.port)}",
                                 db_kwargs={"username": db.username,
                                            "password": db.password,
