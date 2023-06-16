@@ -1,9 +1,9 @@
 adbc-driver-flightsql==0.4.0
 py4j==0.10.9.7
 python-dotenv==1.0.0
-pyarrow==12.0.0
+pyarrow==12.0.1
 codetiming==1.4.0
 pandas==2.0.*
-duckdb==0.8.0
+duckdb==0.8.1
 jpype1==1.4.1
 seaborn==0.12.2
