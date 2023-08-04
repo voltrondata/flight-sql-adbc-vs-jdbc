@@ -21,10 +21,7 @@ def benchmark_jdbc_super_jar(db: FlightDatabaseConnection = FLIGHT_DB,
         os.environ["_JAVA_OPTIONS"] = '--add-opens=java.base/java.nio=ALL-UNNAMED'
 
         # Start the JVM
-        try:
-            jpype.startJVM(jpype.getDefaultJVMPath(), f"-Djava.class.path={classpath}")
-        except OSError:
-            pass
+        jpype.startJVM(jpype.getDefaultJVMPath(), f"-Djava.class.path={classpath}")
 
         from java.sql import DriverManager
 
