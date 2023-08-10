@@ -13,16 +13,11 @@ SCRIPT_DIR = Path(__file__).parent.resolve()
 def benchmark_jdbc_super_jar(db: FlightDatabaseConnection = FLIGHT_DB,
                              query: str = BENCHMARK_SQL_STATEMENT
                              ):
+    java_started: bool = False
     with Timer(name=f"\nJDBC - PyArrow - Fetch data from lineitem table",
                text=TIMER_TEXT,
                initial_text=True
                ):
-        classpath = SCRIPT_DIR / "drivers" / "arrow-flight-sql-combined-jdbc-0.1-SNAPSHOT-jar-with-dependencies.jar"
-        os.environ["_JAVA_OPTIONS"] = '--add-opens=java.base/java.nio=ALL-UNNAMED'
-
-        # Start the JVM
-        jpype.startJVM(jpype.getDefaultJVMPath(), f"-Djava.class.path={classpath}")
-
         from java.sql import DriverManager
 
         from org.apache.arrow.adapter.jdbc import JdbcToArrowUtils, JdbcToArrowConfigBuilder
@@ -69,6 +64,12 @@ def benchmark_jdbc_super_jar(db: FlightDatabaseConnection = FLIGHT_DB,
 
 if __name__ == "__main__":
     import timeit
+
+    classpath = SCRIPT_DIR / "drivers" / "arrow-flight-sql-combined-jdbc-0.1-SNAPSHOT-jar-with-dependencies.jar"
+    os.environ["_JAVA_OPTIONS"] = '--add-opens=java.base/java.nio=ALL-UNNAMED'
+
+    # Start the JVM
+    jpype.startJVM(jpype.getDefaultJVMPath(), f"-Djava.class.path={classpath}")
 
     total_time = timeit.timeit(stmt="benchmark_jdbc_super_jar()",
                                setup="from __main__ import benchmark_jdbc_super_jar",

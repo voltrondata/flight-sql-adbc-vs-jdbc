@@ -24,7 +24,8 @@ BENCHMARK_SQL_STATEMENT = """SELECT l_orderkey
      , l_shipinstruct
      , l_shipmode
      , l_comment
-     FROM lineitem"""
+     FROM lineitem
+LIMIT 1000000"""
 
 NUMBER_OF_RUNS = 10
 
@@ -52,5 +53,5 @@ FLIGHT_DB = FlightDatabaseConnection(hostname=os.getenv("FLIGHT_HOSTNAME", "loca
                                      port=int(os.getenv("FLIGHT_PORT", 31337)),
                                      username=os.environ["FLIGHT_USERNAME"],
                                      password=os.environ["FLIGHT_PASSWORD"],
-                                     disableCertificateVerification=bool(os.getenv("DISABLE_CERTIFICATE_VERIFICATION", "TRUE"))
+                                     disableCertificateVerification=(os.getenv("DISABLE_CERTIFICATE_VERIFICATION", "TRUE").upper() == "TRUE")
                                      )
