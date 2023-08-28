@@ -19,7 +19,7 @@ def main():
                             ) as conn:
         with conn.cursor() as cur:
             cur.execute(operation="SELECT * FROM orders LIMIT 1000000")
-            reader = cur._results._reader
+            reader = cur.fetch_record_batch()
             writer = pq.ParquetWriter(where="orders.parquet", schema=reader.schema)
             total_rows: int = 0
             for batch in reader:
