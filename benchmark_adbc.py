@@ -1,4 +1,4 @@
-import adbc_driver_flightsql.dbapi as flight_sql
+from adbc_driver_flightsql import dbapi as flight_sql, __version__ as flight_sql_version
 from utils import Timer, TIMER_TEXT, NUMBER_OF_RUNS, BENCHMARK_SQL_STATEMENT, FlightDatabaseConnection, FLIGHT_DB
 
 
@@ -23,6 +23,8 @@ def benchmark_adbc(db: FlightDatabaseConnection = FLIGHT_DB,
 
 if __name__ == "__main__":
     import timeit
+
+    print(f"ADBC Flight SQL driver version: {flight_sql_version}")
 
     total_time = timeit.timeit(stmt="benchmark_adbc()",
                                setup="from __main__ import benchmark_adbc",
