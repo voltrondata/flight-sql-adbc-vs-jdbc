@@ -36,7 +36,7 @@ def benchmark_jdbc_py4j(db: FlightDatabaseConnection = FLIGHT_DB,
 
         metadata = rs.getMetaData()
         column_count = metadata.getColumnCount()
-        print(f"Number of column(s): {column_count}")
+        print(f"Number of columns: {column_count}")
 
         row_count = 0
         while rs.next():
