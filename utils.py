@@ -51,7 +51,7 @@ class FlightDatabaseConnection(object):
 
 FLIGHT_DB = FlightDatabaseConnection(hostname=os.getenv("FLIGHT_HOSTNAME", "localhost"),
                                      port=int(os.getenv("FLIGHT_PORT", 31337)),
-                                     username=os.environ["FLIGHT_USERNAME"],
+                                     username=os.getenv("FLIGHT_USERNAME", "flight_username"),
                                      password=os.environ["FLIGHT_PASSWORD"],
                                      disableCertificateVerification=(os.getenv("DISABLE_CERTIFICATE_VERIFICATION", "TRUE").upper() == "TRUE")
                                      )
