@@ -4,7 +4,7 @@ from utils import Timer, TIMER_TEXT, DUCKDB_DB_FILE, NUMBER_OF_RUNS, BENCHMARK_S
 
 
 def benchmark_duckdb(query: str = BENCHMARK_SQL_STATEMENT):
-    with Timer(name=f"\nLocal DuckDB - Fetch data from lineitem table",
+    with Timer(name="\nLocal DuckDB - Fetch data from lineitem table",
                text=TIMER_TEXT,
                initial_text=True
                ):

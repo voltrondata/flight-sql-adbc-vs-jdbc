@@ -11,6 +11,6 @@ with duckdb.connect(database=DUCKDB_DB_FILE.as_posix()) as conn:
     conn.load_extension(extension="tpch")
 
     # Generate the data
-    conn.execute(query=f"CALL dbgen(sf=1)")
+    conn.execute(query="CALL dbgen(sf=1)")
 
     print(f"Created DuckDB Database file: {DUCKDB_DB_FILE.as_posix()}")

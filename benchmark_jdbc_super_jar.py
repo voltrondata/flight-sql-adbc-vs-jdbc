@@ -11,7 +11,7 @@ SCRIPT_DIR = Path(__file__).parent.resolve()
 def benchmark_jdbc_super_jar(db: FlightDatabaseConnection = FLIGHT_DB,
                              query: str = BENCHMARK_SQL_STATEMENT
                              ):
-    with Timer(name=f"\nJDBC - PyArrow - Fetch data from lineitem table",
+    with Timer(name="\nJDBC - PyArrow - Fetch data from lineitem table",
                text=TIMER_TEXT,
                initial_text=True
                ):

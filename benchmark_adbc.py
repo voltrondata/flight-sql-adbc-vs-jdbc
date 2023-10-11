@@ -5,7 +5,7 @@ from utils import Timer, TIMER_TEXT, NUMBER_OF_RUNS, BENCHMARK_SQL_STATEMENT, Fl
 def benchmark_adbc(db: FlightDatabaseConnection = FLIGHT_DB,
                    query: str = BENCHMARK_SQL_STATEMENT
                    ):
-    with Timer(name=f"\nADBC - Fetch data from lineitem table",
+    with Timer(name="\nADBC - Fetch data from lineitem table",
                text=TIMER_TEXT,
                initial_text=True
                ):

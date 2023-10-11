@@ -9,7 +9,7 @@ SCRIPT_DIR = Path(__file__).parent.resolve()
 def benchmark_jdbc_py4j(db: FlightDatabaseConnection = FLIGHT_DB,
                         query: str = BENCHMARK_SQL_STATEMENT
                         ):
-    with Timer(name=f"\nJDBC - Py4J - Fetch data from lineitem table",
+    with Timer(name="\nJDBC - Py4J - Fetch data from lineitem table",
                text=TIMER_TEXT,
                initial_text=True
                ):
@@ -35,7 +35,8 @@ def benchmark_jdbc_py4j(db: FlightDatabaseConnection = FLIGHT_DB,
         stmt.setFetchSize(10000)
 
         metadata = rs.getMetaData()
-        columnCount = metadata.getColumnCount()
+        column_count = metadata.getColumnCount()
+        print(f"Number of column(s): {column_count}")
 
         row_count = 0
         while rs.next():
