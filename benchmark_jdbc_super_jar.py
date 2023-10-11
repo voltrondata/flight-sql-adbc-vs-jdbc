@@ -1,11 +1,9 @@
 # This script was inspired by: https://uwekorn.com/2020/12/30/fast-jdbc-revisited.html
-import os
 import sys
 from pathlib import Path
 
-import jpype.imports
 import pyarrow.jvm
-from utils import Timer, TIMER_TEXT, NUMBER_OF_RUNS, FlightDatabaseConnection, FLIGHT_DB, BENCHMARK_SQL_STATEMENT
+from utils import Timer, TIMER_TEXT, NUMBER_OF_RUNS, FlightDatabaseConnection, FLIGHT_DB, BENCHMARK_SQL_STATEMENT, start_jvm
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
 
@@ -13,7 +11,6 @@ SCRIPT_DIR = Path(__file__).parent.resolve()
 def benchmark_jdbc_super_jar(db: FlightDatabaseConnection = FLIGHT_DB,
                              query: str = BENCHMARK_SQL_STATEMENT
                              ):
-    java_started: bool = False
     with Timer(name=f"\nJDBC - PyArrow - Fetch data from lineitem table",
                text=TIMER_TEXT,
                initial_text=True
@@ -65,11 +62,7 @@ def benchmark_jdbc_super_jar(db: FlightDatabaseConnection = FLIGHT_DB,
 if __name__ == "__main__":
     import timeit
 
-    classpath = SCRIPT_DIR / "drivers" / "arrow-flight-sql-combined-jdbc-0.1-SNAPSHOT-jar-with-dependencies.jar"
-    os.environ["_JAVA_OPTIONS"] = '--add-opens=java.base/java.nio=ALL-UNNAMED'
-
-    # Start the JVM
-    jpype.startJVM(jpype.getDefaultJVMPath(), f"-Djava.class.path={classpath}")
+    start_jvm()
 
     total_time = timeit.timeit(stmt="benchmark_jdbc_super_jar()",
                                setup="from __main__ import benchmark_jdbc_super_jar",

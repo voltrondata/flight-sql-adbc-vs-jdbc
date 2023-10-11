@@ -1,13 +1,15 @@
 # This script was inspired by https://github.com/0x0L/pgeon/blob/main/benchmarks/run.py
-from benchmark_adbc import benchmark_adbc
-from benchmark_jdbc_py4j import benchmark_jdbc_py4j
-from benchmark_jdbc_super_jar import benchmark_jdbc_super_jar
-from benchmark_duckdb import benchmark_duckdb
-from utils import FlightDatabaseConnection, FLIGHT_DB, BENCHMARK_SQL_STATEMENT, NUMBER_OF_RUNS
 import time
+from pathlib import Path
+
 import pandas as pd
 import seaborn as sns
-from pathlib import Path
+
+from benchmark_adbc import benchmark_adbc
+from benchmark_duckdb import benchmark_duckdb
+from benchmark_jdbc_py4j import benchmark_jdbc_py4j
+from benchmark_jdbc_super_jar import benchmark_jdbc_super_jar
+from utils import FlightDatabaseConnection, FLIGHT_DB, BENCHMARK_SQL_STATEMENT, NUMBER_OF_RUNS, start_jvm
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
 GRAPH_OUTPUT_DIR = SCRIPT_DIR / "graph_output"
@@ -57,6 +59,8 @@ def bench_minute_bars(db: FlightDatabaseConnection,
 
 
 if __name__ == "__main__":
+    start_jvm()
+
     bench_minute_bars(db=FLIGHT_DB,
                       query=BENCHMARK_SQL_STATEMENT,
                       n=NUMBER_OF_RUNS

@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from codetiming import Timer
 from dotenv import load_dotenv
+import jpype.imports
+
 
 # Load our environment file
 load_dotenv(dotenv_path=".env")
@@ -55,3 +57,10 @@ FLIGHT_DB = FlightDatabaseConnection(hostname=os.getenv("FLIGHT_HOSTNAME", "loca
                                      password=os.environ["FLIGHT_PASSWORD"],
                                      disableCertificateVerification=(os.getenv("DISABLE_CERTIFICATE_VERIFICATION", "TRUE").upper() == "TRUE")
                                      )
+
+
+def start_jvm():
+    classpath = SCRIPT_DIR / "drivers" / "arrow-flight-sql-combined-jdbc-0.1-SNAPSHOT-jar-with-dependencies.jar"
+    os.environ["_JAVA_OPTIONS"] = '--add-opens=java.base/java.nio=ALL-UNNAMED'
+
+    jpype.startJVM(jpype.getDefaultJVMPath(), f"-Djava.class.path={classpath}")
